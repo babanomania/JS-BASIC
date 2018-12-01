@@ -18,7 +18,7 @@ A javascript based minimal basic compiler and runtime envionment
 ## Lexer
 
 The lexer should be able to handle the below basic commands
-- Data manipulation:
+# Data manipulation:
 
 <!-- end list -->
 
@@ -29,7 +29,7 @@ The lexer should be able to handle the below basic commands
 
 <!-- end list -->
 
-  - Program flow control:
+# Program flow control:
 
 <!-- end list -->
 
@@ -54,17 +54,10 @@ The lexer should be able to handle the below basic commands
   - `ON ... GOTO/GOSUB`—chooses where to jump based on the specified
     conditions. See [Switch statement](Switch_statement "wikilink") for
     other forms.
-  - `DEF FN`—a pair of keywords introduced in the early 1960s to define
-    functions. The original BASIC functions were modeled on FORTRAN
-    single-line functions. BASIC functions were one expression with
-    variable arguments, rather than
-    [subroutines](subroutine "wikilink"), with a syntax on the model of
-    `DEF FND(x) = x*x` at the beginning of a program. Function names
-    were originally restricted to FN+one letter.
 
 <!-- end list -->
 
-  - Input and output:
+# Input and output:
 
 <!-- end list -->
 
@@ -72,12 +65,10 @@ The lexer should be able to handle the below basic commands
   - `PRINT`—displays a message on the screen or other output device.
   - `INPUT`—asks the user to enter the value of a variable. The
     statement may include a prompt message.
-  - `TAB` or `AT`: sets the position where the next character will be
-    shown on the screen or printed on paper.
 
 <!-- end list -->
 
-  - List of functions:
+# List of functions:
 
 <!-- end list -->
 
