@@ -1,0 +1,68 @@
+#ANSI/ISO/IEC Standard for Minimal BASIC
+https://www.ecma-international.org/publications/files/ECMA-ST-WITHDRAWN/ECMA-55,%201st%20Edition,%20January%201978.pdf
+
+#Variable types
+  10 LET P=1.234
+  20 LET Q$="DEMO"
+
+#Syntax
+LET {var}={numeric-expression}
+LET {var$}={string-expression}
+
+IF {bool-expression} THEN {expression} {ELSE} {expression}
+
+FOR {expression} TO {expression} [ STEP} {expression} ]
+NEXT {var}{,var}
+
+WHILE {bool-expression} 
+WEND 
+
+REPEAT 
+UNTIL {bool-expression} 
+
+DO
+LOOP WHILE {bool-expression} 
+
+DO
+LOOP UNTIL {bool-expression} 
+
+GOTO {line no}{,line no}
+
+GOSUB {label}{,label}
+RETURN
+
+{label}:
+RETURN
+
+ON {bool-expression} GOTO {line no}{,line no}
+
+ON {bool-expression} GOSUB {label}{,label}
+
+LIST
+
+PRINT {evaluated-string}
+
+INPUT ["string to print",] {var}
+
+REM {anything}
+
+END 
+
+#expression
+( ) + - * / < > AND OR
+
+#provided functions
+
+ ABS - Absolute value
+ ATN - Arctangent value (result in radians)
+ COS - Cosine value (argument in radians)
+ EXP - Exponential value
+ INT - Integer value
+ LOG - Natural Logarithmic value
+ RND - Random value
+ SIN - Sine value (argument in radians)
+ SQR - Square root value
+ TAN - Tangent value (argument in radians)
+ CLS - clears the screen
+
+

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <title>Minimal Basic</title>
+  <meta name="author" content="Shouvik Basu">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+  
+  <div class="container">
+
+    <div class="row u-full-width" style="margin-top: 5%">
+      
+      <div class="u-pull-left">
+        <h2>Minimal Basic Environment</h2>
+      </div>
+
+      <div class="u-pull-right">
+          <input id="run_btn" type="button" class="button-primary" value="Run"/>
+          <input id="clear_btn" type="button" value="Clear"/>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="container">
+    <div class="row">
+
+      <div class="one-half column" style="margin-top: 5%">
+        <label for="editor">Code</label>
+        <textarea class="u-full-width notes" placeholder="write code here" 
+                  rows="50" id="editor" style="height: 30em">
+
+                  
+        </textarea>
+
+        
+
+      </div>
+
+      <div class="one-half column" style="margin-top: 5%">
+          <label for="terminal">Output</label>
+          <div>
+            <ul id="terminal" class="output">
+            </ul>
+          </div>
+      </div>
+      
+        
+    </div>
+  </div>
+
+  <script src="js/terminal.js"></script>
+  <script src="js/lexer.js"></script>
+  <script src="js/index.js"></script>
+</body>
+
+
