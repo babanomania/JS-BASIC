@@ -15,9 +15,9 @@ A javascript based minimal basic compiler and runtime envionment
 * [ ] Debugging Controls
 * [ ] Show variable and call stack while debugging mode
 
-## Lexer
+## Supported Commands
 
-The lexer should be able to handle the below basic commands
+The runtime should be able to handle the below basic commands
 
 ### Data manipulation:
 
