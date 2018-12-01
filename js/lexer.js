@@ -23,24 +23,64 @@ class Lexer {
             'PRINT': this.parse_print,
             'INPUT': this.parse_input,
             'IF': this.parse_if,
+            'FOR': this.parse_for,
+            'NEXT': this.parse_next,
+            'WHILE': this.parse_while,
+            'WEND': this.parse_wend,
+            'DO': this.parse_do,
+            'LOOP': this.parse_loop,
+            'GOTO': this.parse_goto,
+            'GOSUB': this.parse_gosub,
+            'RETURN': this.parse_return,
+            'SUB': this.parse_gosub,
+            'ON': this.parse_on,
             'END': this.parse_end,
         }
 
+        var inbuild_functions =[
+            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'RND', 'SIN', 'SQR', 'TAN', 'CLS'
+        ]
+
         for( var j = 0; j < codes_lines.length; j++ ){
 
-            var line_tokens = codes_lines[j].split(' ');
+            var this_line = this.cleanup( codes_lines[j] );
+            var line_tokens = this_line.split(' ');
 
             var cmd = line_tokens[1];
             var callback = callback_maps[cmd];
 
-            if( callback ){
-                var defination = (line_tokens) => callback;
-                tokens.push( defination ) ;
+            if( cmd.endsWith(':') ){
+                callback = callback_maps['SUB'];
+
+            } else if ( line_tokens[2] = '=' ) {
+                callback = this.parse_assign;
+
+            } else if ( inbuild_functions.contains( cmd ) ){
+                callback = this.parse_function_call;
+
             }
+
+            tokens.push( (callback)(line_tokens) ) ;
 
         }
 
         return tokens;
+    }
+
+    cleanup( line ){
+
+        line = line.replace( '=', ' = ' );
+        line = line.replace( '(', ' ( ' );
+        line = line.replace( ')', ' ) ' );
+        line = line.replace( '+', ' + ' );
+        line = line.replace( '-', ' - ' );
+        line = line.replace( '*', ' * ' );
+        line = line.replace( '\\', ' \\ ' );
+        line = line.replace( '<', ' < ' );
+        line = line.replace( '>', ' > ' );
+        line = line.replace(/\s\s+/g, ' ');
+
+        return line;
     }
 
     parse_rem( line_tokens ){
@@ -138,9 +178,253 @@ class Lexer {
         };
     }
 
+    parse_for( line_tokens ){
+
+        var for_expr = [];
+        var to_expr = [];
+        var step_expr = [];
+
+        var for_index = -1;
+        var to_index = -1;
+        var step_index = -1;
+
+        for( var index = 0 ; index < line_tokens.length; index++ ){
+            if( line_tokens[index] == 'FOR' ){
+                for_index = index;
+
+            } else if( line_tokens[index] == 'TO' ){
+                to_index = index;
+
+            } else if( line_tokens[index] == 'NEXT' ){
+                step_index = index;
+            }
+        }
+
+        for( var index = ( for_expr + 1 ) ; index < to_index; index ++ ){
+            for_expr.push( line_tokens[index] );
+        }
+
+        for( var index = ( to_index + 1 ) ; index < step_index; index ++ ){
+            to_expr.push( line_tokens[index] );
+        }
+
+        if( step_expr > 0 ){
+            for( var index = ( step_index + 1 ) ; index < line_tokens.length; index ++ ){
+                step_expr.push( line_tokens[index] );
+            }
+        }
+
+        return {
+            CMD: 'FOR',
+            EXPR: for_expr,
+            TO_EXPR: then_expr,
+            STEP_EXPR: step_expr,
+        };
+    }
+
+    parse_next( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count].replace( ',', '' ) );
+        }
+
+        return {
+            CMD: 'NEXT',
+            EXPR: expr,
+        };
+    }
+
+
+    parse_while( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count] );
+        }
+
+        return {
+            CMD: 'WHILE',
+            EXPR: expr,
+        };
+    }
+
+    parse_wend( line_tokens ){
+        return {
+            CMD: 'WEND',
+        }
+    }
+
+    parse_do( line_tokens ){
+        return {
+            CMD: 'DO',
+        };
+    }
+
     parse_end( line_tokens ){
         return {
             CMD: 'END',
         }
+    }
+
+    parse_loop( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 3; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count] );
+        }
+
+        return {
+            CMD: 'LOOP',
+            EXPR: expr,
+        }
+    }
+
+    parse_goto( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count].replace( ',', '' ) );
+        }
+
+        return {
+            CMD: 'GOTO',
+            EXPR: expr,
+        }
+    }
+
+    parse_gosub( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count].replace( ',', '' ) );
+        }
+
+        return {
+            CMD: 'GOSUB',
+            EXPR: expr,
+        }
+    }
+
+    parse_return( line_tokens ){
+        return {
+            CMD: 'RETURN',
+            EXPR: line_tokens
+        }
+    }
+
+    parse_sub( line_tokens ){
+        return {
+            CMD: 'SUB',
+            SUBNAME: line_tokens[0].substring( 0, (line_tokens[0].length - 1) ),
+            EXPR: line_tokens
+        }
+    }
+
+    parse_on( line_tokens ){
+
+        var is_goto = false;
+        var is_gosub = false;
+
+        for( var index = 0 ; index < line_tokens.length; index++ ){
+            if( line_tokens[index] == 'GOTO' ){
+                is_goto = true;
+
+            } else if( line_tokens[index] == 'GOSUB' ){
+                is_gosub = true;
+
+            }
+        }
+
+        return is_goto ? parse_on_goto( line_tokens ) : parse_on_gosub( line_tokens );
+    }
+
+    parse_on_goto( line_tokens ){
+
+        var goto_index = -1;
+        var expr = [];
+        var goto_expr = [];
+
+        for( var index = 0 ; index < line_tokens.length; index++ ){
+            if( line_tokens[index] == 'GOTO' ){
+                goto_index = index;
+
+            }
+        }
+
+        for( var index = 1 ; index < goto_index; index++ ){            
+            expr.push( line_tokens[index] );
+
+        }
+
+        for( var index = goto_index ; index < line_tokens.length; index++ ){            
+            goto_expr.push( line_tokens[index].replace( ',', '' ) );
+
+        }
+
+        return {
+            CMD: 'ON-GOTO',
+            EXPR: expr,
+            GOTO_EXPR: goto_expr,
+        }
+    }
+
+    parse_on_gosub( line_tokens ){
+        
+        var gosub_index = -1;
+        var expr = [];
+        var gosub_expr = [];
+
+        for( var index = 0 ; index < line_tokens.length; index++ ){
+            if( line_tokens[index] == 'GOSUB' ){
+                gosub_index = index;
+
+            }
+        }
+
+        for( var index = 1 ; index < goto_index; index++ ){            
+            expr.push( line_tokens[index] );
+
+        }
+
+        for( var index = goto_index ; index < line_tokens.length; index++ ){            
+            gosub_expr.push( line_tokens[index].replace( ',', '' ) );
+
+        }
+
+        return {
+            CMD: 'ON-GOSUB',
+            EXPR: expr,
+            GOTO_EXPR: goto_expr,
+        }
+    }
+
+    parse_assign( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 3; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count] );
+        }
+
+        return {
+            CMD: 'LET',
+            VAR: line_tokens[1],
+            TYPE: line_tokens[1].endsWith('$') ? 'STRING' : 'NUM',
+            EXPR: expr,
+        };
+    }
+
+    parse_function_call( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 3; token_count < ( line_tokens.length - 1 ); token_count++ ){
+            expr.push( line_tokens[token_count] );
+        }
+
+        return {
+            CMD: 'CALL',
+            FUNC_NAME: line_tokens[1],
+            EXPR: expr,
+        };
     }
 }
