@@ -18,20 +18,15 @@ A javascript based minimal basic compiler and runtime envionment
 ## Lexer
 
 The lexer should be able to handle the below basic commands
-# Data manipulation:
 
-<!-- end list -->
+### Data manipulation:
 
   - `LET`—assigns a value (which may be the result of an
     [expression](expression_\(programming\) "wikilink")) to a variable.
   - `DATA`—holds a list of values which are assigned sequentially using
     the READ command.
 
-<!-- end list -->
-
-# Program flow control:
-
-<!-- end list -->
+### Program flow control:
 
   - `IF ... THEN ... {ELSE}`—used to perform comparisons or make
     decisions.
@@ -55,22 +50,14 @@ The lexer should be able to handle the below basic commands
     conditions. See [Switch statement](Switch_statement "wikilink") for
     other forms.
 
-<!-- end list -->
-
-# Input and output:
-
-<!-- end list -->
+### Input and output:
 
   - `LIST`—displays all inputted code.
   - `PRINT`—displays a message on the screen or other output device.
   - `INPUT`—asks the user to enter the value of a variable. The
     statement may include a prompt message.
 
-<!-- end list -->
-
-# List of functions:
-
-<!-- end list -->
+### List of functions:
 
   - `ABS`—Absolute value
   - `ATN`—Arctangent value (result in [radians](radian "wikilink"))
