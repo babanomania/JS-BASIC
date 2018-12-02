@@ -1,22 +1,12 @@
+var expr_lexer = new ExprLexer();
+
 class Lexer {
-    constructor( text ){
-        this.text = text;
+    constructor(){
+        expr_lexer.parse = expr_lexer.parse.bind(this);
     }
 
-    parse(){
-
-        var tokens = [];
-        var codes_lines = [];
-        var codes_lines_raw = this.text.split( '\n' );
-
-        for( var i = 0; i < codes_lines_raw.length; i++ ){
-            if( codes_lines_raw[i] && codes_lines_raw[i].trim().length > 0 ){
-                codes_lines.push( codes_lines_raw[i].trim() );
-            }
-        }
-
-        codes_lines.sort();
-
+    parse( codes_lines ){
+        
         var callback_maps = {
             'REM': this.parse_rem,
             'LET': this.parse_let,
@@ -41,23 +31,26 @@ class Lexer {
             'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'RND', 'SIN', 'SQR', 'TAN', 'CLS'
         ]
 
+        var tokens = [];
         for( var j = 0; j < codes_lines.length; j++ ){
 
-            var this_line = this.cleanup( codes_lines[j] );
-            var line_tokens = this_line.split(' ');
+            var line_tokens = codes_lines[j].split(' ');
 
             var cmd = line_tokens[1];
             var callback = callback_maps[cmd];
 
-            if( cmd.endsWith(':') ){
-                callback = callback_maps['SUB'];
+            if( !callback ){
+            
+                if( cmd.endsWith(':') ){
+                    callback = callback_maps['SUB'];
 
-            } else if ( line_tokens[2] = '=' ) {
-                callback = this.parse_assign;
+                } else if ( line_tokens[2] = '=' ) {
+                    callback = this.parse_assign;
 
-            } else if ( inbuild_functions.contains( cmd ) ){
-                callback = this.parse_function_call;
+                } else if ( inbuild_functions.contains( cmd ) ){
+                    callback = this.parse_function_call;
 
+                }
             }
 
             tokens.push( (callback)(line_tokens) ) ;
@@ -67,20 +60,34 @@ class Lexer {
         return tokens;
     }
 
-    cleanup( line ){
+    cleanup( text ){
 
-        line = line.replace( '=', ' = ' );
-        line = line.replace( '(', ' ( ' );
-        line = line.replace( ')', ' ) ' );
-        line = line.replace( '+', ' + ' );
-        line = line.replace( '-', ' - ' );
-        line = line.replace( '*', ' * ' );
-        line = line.replace( '\\', ' \\ ' );
-        line = line.replace( '<', ' < ' );
-        line = line.replace( '>', ' > ' );
-        line = line.replace(/\s\s+/g, ' ');
+        var codes_lines = [];
+        var codes_lines_raw = text.split( '\n' );
 
-        return line;
+        for( var i = 0; i < codes_lines_raw.length; i++ ){
+            if( codes_lines_raw[i] && codes_lines_raw[i].trim().length > 0 ){
+                
+                var line = codes_lines_raw[i];
+                line = line.toUpperCase();
+                line = line.replace( '=', ' = ' );
+                line = line.replace( '(', ' ( ' );
+                line = line.replace( ')', ' ) ' );
+                line = line.replace( '+', ' + ' );
+                line = line.replace( '-', ' - ' );
+                line = line.replace( '*', ' * ' );
+                line = line.replace( '\\', ' \\ ' );
+                line = line.replace( '<', ' < ' );
+                line = line.replace( '>', ' > ' );
+                line = line.replace(/\s\s+/g, ' ');
+                line = line.trim();
+                
+                codes_lines.push( line );
+            }
+        }
+
+        codes_lines.sort();
+        return codes_lines;
     }
 
     parse_rem( line_tokens ){
@@ -100,7 +107,7 @@ class Lexer {
             CMD: 'LET',
             VAR: line_tokens[2],
             TYPE: line_tokens[2].endsWith('$') ? 'STRING' : 'NUM',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
 
@@ -113,24 +120,37 @@ class Lexer {
 
         return {
             CMD: 'PRINT',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
 
     parse_input( line_tokens ){
 
         var expr = [];
-        if( this_line.indexOf(',') > 0 ){
-            for( var token_count = 2; token_count < ( line_tokens.length - 1 ); token_count++ ){
-                expr.push( line_tokens[token_count] );
+        var has_prompt = false;
+
+        var idx_prompt_start = -1;
+        var idx_prompt_end = -1;
+
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            if( line_tokens[token_count].startsWith( '"' ) ){
+                has_prompt = true;
+                idx_prompt_start = token_count
+
+            } else if( line_tokens[token_count].endsWith( '"' ) && has_prompt ){
+                idx_prompt_end = token_count
             }
+        }
+
+        for( var idx = idx_prompt_start; idx <= idx_prompt_end; idx++ ){
+            expr.push( line_tokens[idx] );
         }
 
         return {
             CMD: 'INPUT',
             VAR: line_tokens[ line_tokens.length - 1 ],
             TYPE: line_tokens[ line_tokens.length - 1 ].endsWith('$') ? 'STRING' : 'NUM',
-            EXPR: expr,
+            EXPR: expr.length > 0 ? expr_lexer.parse(expr) : null,
         };
     }
 
@@ -172,9 +192,9 @@ class Lexer {
 
         return {
             CMD: 'IF',
-            EXPR: if_expr,
-            THEN_EXPR: then_expr,
-            ELSE_EXPR: else_expr,
+            EXPR: expr_lexer.parse(if_expr),
+            THEN_EXPR: expr_lexer.parse(then_expr),
+            ELSE_EXPR: expr_lexer.parse(else_expr),
         };
     }
 
@@ -217,8 +237,8 @@ class Lexer {
         return {
             CMD: 'FOR',
             EXPR: for_expr,
-            TO_EXPR: then_expr,
-            STEP_EXPR: step_expr,
+            TO_EXPR: expr_lexer.parse(then_expr),
+            STEP_EXPR: expr_lexer.parse(step_expr),
         };
     }
 
@@ -231,7 +251,7 @@ class Lexer {
 
         return {
             CMD: 'NEXT',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
 
@@ -245,7 +265,7 @@ class Lexer {
 
         return {
             CMD: 'WHILE',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
 
@@ -364,7 +384,7 @@ class Lexer {
 
         return {
             CMD: 'ON-GOTO',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
             GOTO_EXPR: goto_expr,
         }
     }
@@ -394,7 +414,7 @@ class Lexer {
 
         return {
             CMD: 'ON-GOSUB',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
             GOTO_EXPR: goto_expr,
         }
     }
@@ -407,10 +427,10 @@ class Lexer {
         }
 
         return {
-            CMD: 'LET',
+            CMD: 'ASSIGN',
             VAR: line_tokens[1],
             TYPE: line_tokens[1].endsWith('$') ? 'STRING' : 'NUM',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
 
@@ -424,7 +444,8 @@ class Lexer {
         return {
             CMD: 'CALL',
             FUNC_NAME: line_tokens[1],
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         };
     }
+
 }
