@@ -35,7 +35,6 @@ class Lexer {
         for( var j = 0; j < codes_lines.length; j++ ){
 
             var line_tokens = codes_lines[j].split(' ');
-
             var cmd = line_tokens[1];
             var callback = callback_maps[cmd];
 
@@ -47,7 +46,7 @@ class Lexer {
                 } else if ( line_tokens[2] = '=' ) {
                     callback = this.parse_assign;
 
-                } else if ( inbuild_functions.contains( cmd ) ){
+                } else if ( inbuild_functions.indexOf( cmd ) > 0 ){
                     callback = this.parse_function_call;
 
                 }
@@ -70,18 +69,19 @@ class Lexer {
                 
                 var line = codes_lines_raw[i];
                 line = line.toUpperCase();
-                line = line.replace( '=', ' = ' );
-                line = line.replace( '(', ' ( ' );
-                line = line.replace( ')', ' ) ' );
-                line = line.replace( '+', ' + ' );
-                line = line.replace( '-', ' - ' );
-                line = line.replace( '*', ' * ' );
-                line = line.replace( '\\', ' \\ ' );
-                line = line.replace( '<', ' < ' );
-                line = line.replace( '>', ' > ' );
+                line = line.replace( /\=/g, ' = ' );
+                line = line.replace( /\(/g, ' ( ' );
+                line = line.replace( /\)/g, ' ) ' );
+                line = line.replace( /\+/g, ' + ' );
+                line = line.replace( /\-/g, ' - ' );
+                line = line.replace( /\*/g, ' * ' );
+                line = line.replace( /\\/g, ' \\ ' );
+                line = line.replace( /\</g, ' < ' );
+                line = line.replace( /\>/g, ' > ' );
                 line = line.replace(/\s\s+/g, ' ');
                 line = line.trim();
-                
+                console.log( line )
+
                 codes_lines.push( line );
             }
         }

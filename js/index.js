@@ -35,5 +35,15 @@ run_btn.addEventListener( 'click', function(event){
 
 });
 
+var test_code = " ( A + B ) > C  AND B > D";
+
 expr_lexer = new ExprLexer();
-console.log( "AST for expressions => ", expr_lexer.test() );
+test_tokens = expr_lexer.test( test_code.trim() );
+console.log( "test -> tokens after lexing" );
+console.log( test_tokens );
+
+expr_parser = new ExprParser();
+text_opcodes = expr_parser.test( test_tokens );
+console.log( "test -> opcodes after parsing" );
+console.table( text_opcodes );
+

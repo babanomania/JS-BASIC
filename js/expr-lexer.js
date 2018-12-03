@@ -1,19 +1,8 @@
 class ExprLexer {
 
-    test(){
-        return this.parse([
-            '(',
-            '(',
-            'A',
-            '+',
-            'B',
-            ')',
-            '+',
-            'C',
-            ')',
-            '+',
-            'D',
-        ]);
+    test( code ){
+        var code_list = code.split(' ')
+        return this.parse(code_list);
     }
 
     parse( tokens ){
@@ -21,6 +10,8 @@ class ExprLexer {
         var operands = [
             'OR',
             'AND',
+            '<',
+            '>',
             '/',
             '*',
             '+',
@@ -28,6 +19,8 @@ class ExprLexer {
         ];
 
         var OPCODES = {
+            '<': 'OP_GT',
+            '>': 'OP_LT',
             'OR': 'OP_OR',
             'AND': 'OP_AND',
             '/': 'OP_DIV',
@@ -35,6 +28,10 @@ class ExprLexer {
             '+': 'OP_ADD',
             '-': 'OP_SUBT',
         };
+
+        var inbuild_functions =[
+            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'RND', 'SIN', 'SQR', 'TAN', 'CLS'
+        ]
 
         var expr_tokens = [];
         if( tokens.length == 1 ){
@@ -57,10 +54,24 @@ class ExprLexer {
             return {
                 TYPE: type,
                 VAL: tokens[0],
+                CMD: 'SET',
             };
 
         } else if( ( tokens[0] == '(' ) && ( tokens[ tokens.length - 1 ] == ')' ) ){
             return this.parse( tokens.splice( 1, tokens.length - 2 ) );
+
+        } else if ( inbuild_functions.indexOf( tokens[0] ) > 0 ){
+
+            var expr = [];
+            for( var token_count = 2; token_count < ( tokens.length - 1 ); token_count++ ){
+                expr.push( tokens[token_count] );
+            }
+
+            return {
+                CMD: 'CALL',
+                FUNC_NAME: tokens[0],
+                EXPR: this.parse(expr),
+            };
 
         } else {
 
@@ -103,7 +114,7 @@ class ExprLexer {
 
                     return {
                         CMD: 'EXPR',
-                        FUNC: OPCODES[each_operand],
+                        OP_NAME: OPCODES[each_operand],
                         LVALUE: this.parse(lvalue),
                         RVALUE: this.parse(rvalue),
                     };
