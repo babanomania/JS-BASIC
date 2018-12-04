@@ -5,7 +5,7 @@ const runtime = new Runtime( terminal );
 
 const clear_btn = document.querySelector('#clear_btn');
 clear_btn.addEventListener( 'click', function(event){
-    terminal.clear();
+    runtime.clear();
 });
 
 const run_btn = document.querySelector('#run_btn');
