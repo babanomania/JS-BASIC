@@ -1,5 +1,5 @@
 10 LET A  = 10
 20 PRINT "Hello World"  + A
 30 INPUT A
-40 INPUT "hello world", A
+40 INPUT "hello world" A
 50 END

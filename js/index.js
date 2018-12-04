@@ -1,5 +1,6 @@
 const terminal = new Terminal( '#terminal', 10 );
 const lexer = new Lexer();
+const parser = new Parser();
 
 const clear_btn = document.querySelector('#clear_btn');
 clear_btn.addEventListener( 'click', function(event){
@@ -22,6 +23,10 @@ run_btn.addEventListener( 'click', function(event){
         console.table( tokens );
         console.log();
 
+        var op_codes = parser.parse( tokens );
+        console.log( '3. After Parsing' );
+        console.table( op_codes );
+        console.log();
 
     }
 
@@ -35,6 +40,7 @@ run_btn.addEventListener( 'click', function(event){
 
 });
 
+/*
 var test_code = " ( A + B ) > C  AND B > D";
 
 expr_lexer = new ExprLexer();
@@ -46,4 +52,6 @@ expr_parser = new ExprParser();
 text_opcodes = expr_parser.test( test_tokens );
 console.log( "test -> opcodes after parsing" );
 console.table( text_opcodes );
+
+*/
 

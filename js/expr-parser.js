@@ -1,5 +1,9 @@
 class ExprParser {
 
+    constructor(){
+        this.parse = this.parse.bind(this);
+    }
+
     test( test_tokens ){
         return this.parse( test_tokens );
     }
@@ -40,10 +44,16 @@ class ExprParser {
         if( !tokens ){
             return;
 
-        } else if( tokens.TYPE == 'VAL' & tokens.CMD == 'SET' ){
+        } else if( tokens.TYPE == 'NUM' & tokens.ECMD == 'SET' ){
+            return [{ CODE: 'PUSH_NUM', VAL: tokens.VAL }];
+
+        } else if( tokens.TYPE == 'STRING' & tokens.ECMD == 'SET' ){
+            return [{ CODE: 'PUSH_STR', VAL: tokens.VAL }];
+
+        } else if( tokens.TYPE == 'VAL' & tokens.ECMD == 'SET' ){
             return [{ CODE: 'PUSH_VAL', VAL: tokens.VAL }];
 
-        } else if( tokens.TYPE == 'VAR'  & tokens.CMD == 'SET' ){
+        } else if( tokens.TYPE == 'VAR'  & tokens.ECMD == 'SET' ){
             return [{ CODE: 'PUSH_VAR', VAL: tokens.VAL }];
 
         } else if( OPCODES.indexOf( tokens.OP_NAME ) > 0 ){
@@ -57,8 +67,10 @@ class ExprParser {
                 return_opcode.push( lval_codes[lidx] );
             }
 
-            for( var ridx = 0; ridx < rval_codes.length; ridx++ ){
-                return_opcode.push( rval_codes[ridx] );
+            if( rval_codes ){
+                for( var ridx = 0; ridx < rval_codes.length; ridx++ ){
+                    return_opcode.push( rval_codes[ridx] );
+                }
             }
 
             return_opcode.push({
@@ -67,11 +79,11 @@ class ExprParser {
 
             return return_opcode;
 
-        } else if( tokens.CMD = 'CALL' & inbuild_functions.indexOf( tokens.FUNC_NAME ) > 0 ){
+        } else if( inbuild_functions.indexOf( tokens.FUNC_NAME ) > 0 ){
 
-            var expr_codes = parse( tokens.EXPR );
+            var expr_codes = this.parse( tokens.EXPR );
             var return_opcode = [];
-            for( var idx = 0; lidx < expr_codes.length; idx++ ){
+            for( var idx = 0; idx < expr_codes.length; idx++ ){
                 return_opcode.push( expr_codes[idx] );
             }
 

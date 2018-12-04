@@ -1,5 +1,9 @@
 class ExprLexer {
 
+    constructor(){
+        this.parse = this.parse.bind(this);
+    }
+
     test( code ){
         var code_list = code.split(' ')
         return this.parse(code_list);
@@ -52,9 +56,9 @@ class ExprLexer {
             }
 
             return {
+                ECMD: 'SET',
                 TYPE: type,
                 VAL: tokens[0],
-                CMD: 'SET',
             };
 
         } else if( ( tokens[0] == '(' ) && ( tokens[ tokens.length - 1 ] == ')' ) ){
@@ -68,7 +72,7 @@ class ExprLexer {
             }
 
             return {
-                CMD: 'CALL',
+                ECMD: 'CALL',
                 FUNC_NAME: tokens[0],
                 EXPR: this.parse(expr),
             };
@@ -85,7 +89,6 @@ class ExprLexer {
 
                 if( tokens[ind] == '(' ){
                     open_brackets = open_brackets + 1;
-
                 } 
 
                 if( open_brackets > 0 ){

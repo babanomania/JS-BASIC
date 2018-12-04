@@ -35,6 +35,7 @@ class Lexer {
         for( var j = 0; j < codes_lines.length; j++ ){
 
             var line_tokens = codes_lines[j].split(' ');
+
             var cmd = line_tokens[1];
             var callback = callback_maps[cmd];
 
@@ -98,17 +99,17 @@ class Lexer {
 
     parse_let( line_tokens ){
 
-        var expr = [];
+        var exprs = [];
         for( var token_count = 4; token_count < line_tokens.length; token_count++ ){
-            expr.push( line_tokens[token_count] );
+            exprs.push( line_tokens[token_count] );
         }
 
         return {
             CMD: 'LET',
             VAR: line_tokens[2],
             TYPE: line_tokens[2].endsWith('$') ? 'STRING' : 'NUM',
-            EXPR: expr_lexer.parse(expr),
-        };
+            EXPR: expr_lexer.parse(exprs),
+        };;
     }
 
     parse_print( line_tokens ){
@@ -142,14 +143,15 @@ class Lexer {
             }
         }
 
-        for( var idx = idx_prompt_start; idx <= idx_prompt_end; idx++ ){
-            expr.push( line_tokens[idx] );
+        if( idx_prompt_start != -1 & idx_prompt_end != -1 ){
+            for( var idx = idx_prompt_start; idx <= idx_prompt_end; idx++ ){
+                expr.push( line_tokens[idx] );
+            }
         }
 
         return {
             CMD: 'INPUT',
             VAR: line_tokens[ line_tokens.length - 1 ],
-            TYPE: line_tokens[ line_tokens.length - 1 ].endsWith('$') ? 'STRING' : 'NUM',
             EXPR: expr.length > 0 ? expr_lexer.parse(expr) : null,
         };
     }
