@@ -1,6 +1,7 @@
 const terminal = new Terminal( '#terminal', 10 );
 const lexer = new Lexer();
 const parser = new Parser();
+const runtime = new Runtime( terminal );
 
 const clear_btn = document.querySelector('#clear_btn');
 clear_btn.addEventListener( 'click', function(event){
@@ -28,8 +29,13 @@ run_btn.addEventListener( 'click', function(event){
         console.table( op_codes );
         console.log();
 
+        console.log( '4. Executing OpCodes' );
+        runtime.upload_opcodes( op_codes );
+        runtime.execute();
+
     }
 
+/*
     terminal.print( 'HELLO WORLD' );
     terminal.print( 'WHAT IS YOUR NAME ? SHOUVIK' );
     terminal.print( 'HELLO SHOUVIK' );
@@ -37,6 +43,7 @@ run_btn.addEventListener( 'click', function(event){
     terminal.input( 'what is your name', 'name$', ( name, value ) => {
         console.log( 'input received for var ', name, ' and value ', value );
     });
+*/
 
 });
 

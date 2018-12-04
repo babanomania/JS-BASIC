@@ -36,6 +36,7 @@ class Lexer {
 
             var line_tokens = codes_lines[j].split(' ');
 
+            var line_num = line_tokens[0];
             var cmd = line_tokens[1];
             var callback = callback_maps[cmd];
 
@@ -53,7 +54,10 @@ class Lexer {
                 }
             }
 
-            tokens.push( (callback)(line_tokens) ) ;
+            var callback_op = (callback)(line_tokens);
+            callback_op.LINE_NUM = line_num;
+
+            tokens.push( callback_op ) ;
 
         }
 

@@ -20,12 +20,17 @@ class Parser {
         for( var i = 0; i < tokens.length; i++ ){
             var line_tokens = tokens[i];
 
+            var line_num = line_tokens.LINE_NUM;
             var callback = callback_maps[line_tokens.CMD];
             if( callback ){
                 var callback_opcodes = (callback)(line_tokens) ;
 
                 for( var idx = 0; idx < callback_opcodes.length; idx++ ){
-                    opcodes.push( callback_opcodes[idx] );
+
+                    var this_callback_opcode = callback_opcodes[idx] ;
+                    this_callback_opcode.LINE_NUM = line_num;
+
+                    opcodes.push( this_callback_opcode );
                 }
             }
 
