@@ -15,6 +15,7 @@ class Runtime{
         this.variable_stack = [];
         this.variable_defs = {};
         this.program_counter = 0;
+        terminal.clear();
     }
 
     execute(){
@@ -56,17 +57,16 @@ class Runtime{
         ]
 
         var doloop = true;
-        for( ; doloop && ( program_counter < tokens.length ); program_counter++ ){
-            var opcodes = tokens[program_counter];
-
+        for( ; doloop && ( this.program_counter < this.op_codes.length ); this.program_counter++ ){
+            var opcodes = this.op_codes[this.program_counter];
 
             var line_num = opcodes.LINE_NUM;
             var code = opcodes.CMD;
             var value = opcodes.VAL;
 
-            var callback = callback_maps[line_tokens.code];
+            var callback = callback_maps[opcodes.code];
             if( callback ){
-                (callback)(line_tokens) ;
+                (callback)(opcodes) ;
             }
 
             if( loop_breakers.indexOf( code ) > 0 ){
