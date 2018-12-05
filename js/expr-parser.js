@@ -47,7 +47,7 @@ class ExprParser {
         } else if( tokens.TYPE == 'NUM' & tokens.ECMD == 'SET' ){
             return [{ CODE: 'PUSH_NUM', VAL: tokens.VAL }];
 
-        } else if( tokens.TYPE == 'STRING' & tokens.ECMD == 'SET' ){
+        } else if( tokens.TYPE == 'STR' & tokens.ECMD == 'SET' ){
             return [{ CODE: 'PUSH_STR', VAL: tokens.VAL }];
 
         } else if( tokens.TYPE == 'VAL' & tokens.ECMD == 'SET' ){

@@ -44,7 +44,7 @@ class ExprLexer {
             if( tokens[0] ){
             
                 if( tokens[0].indexOf('"') >= 0 ){
-                    type = 'STRING';
+                    type = 'STR';
 
                 } else if( isNaN( tokens[0] ) ){
                     type = 'VAR';
@@ -58,7 +58,7 @@ class ExprLexer {
             return {
                 ECMD: 'SET',
                 TYPE: type,
-                VAL: type == 'STRING' ? tokens[0].substring( 1, tokens[0].length - 1 ) : tokens[0],
+                VAL: type == 'STR' ? tokens[0].substring( 1, tokens[0].length - 1 ) : tokens[0],
             };
 
         } else if( ( tokens[0] == '(' ) && ( tokens[ tokens.length - 1 ] == ')' ) ){

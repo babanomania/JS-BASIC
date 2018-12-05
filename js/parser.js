@@ -100,10 +100,6 @@ class Parser {
             });
         }
 
-        opcodes_this.push({
-            CODE:'PRINT_NEWLINE', VAL: null,
-        });
-
         return opcodes_this;
     }
 
@@ -114,7 +110,6 @@ class Parser {
         var varb = line_tokens.VAR;
         var expr = line_tokens.EXPR;
 
-        
         if( expr ){
             
             var expr_opcodes = expr_parser.parse( expr );
@@ -123,13 +118,16 @@ class Parser {
             }
 
             opcodes_this.push({
-                CODE:'PRINT', VAL: null,
+                CODE:'INPUT_PROMPT', VAL: varb,
             });
-        }
 
-        opcodes_this.push({
-            CODE:'INPUT', VAL: varb,
-        });
+        } else {
+
+            opcodes_this.push({
+                CODE:'INPUT_NOPROMPT', VAL: varb,
+            });
+
+        }
 
         return opcodes_this;
     }

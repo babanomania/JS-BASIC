@@ -12,7 +12,7 @@ class Terminal {
         this.show( this.row_length );
     }
 
-    input( value, var_name, onreceived ){
+    input( value, var_name, line_num, instance, onreceived ){
 
         this.show( this.row_length - 1 );
         
@@ -44,15 +44,14 @@ class Terminal {
 
         this.term_ul.appendChild( li_node );
 
-        var instance  = this;
+        var instance_this  = this;
         var term_input = document.querySelector('#term_input');
         term_input.addEventListener('keyup', function (event) {
             if (event.keyCode === 13) {
 
-                //console.log( 'got value => ', this.value );
-                onreceived( var_name, this.value );
-                instance.print( instance.input_buffer + this.value );
-                instance.input_buffer = '';
+                instance_this.print( instance_this.input_buffer + this.value );
+                instance_this.input_buffer = '';
+                onreceived( var_name, this.value, line_num, instance );
             }
         });
    

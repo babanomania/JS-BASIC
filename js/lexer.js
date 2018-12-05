@@ -111,7 +111,7 @@ class Lexer {
         return {
             CMD: 'LET',
             VAR: line_tokens[2],
-            TYPE: line_tokens[2].endsWith('$') ? 'STRING' : 'NUM',
+            TYPE: line_tokens[2].endsWith('$') ? 'STR' : 'NUM',
             EXPR: expr_lexer.parse(exprs),
         };;
     }
@@ -137,8 +137,9 @@ class Lexer {
         var idx_prompt_start = -1;
         var idx_prompt_end = -1;
 
-        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
-            if( line_tokens[token_count].startsWith( '"' ) ){
+        for( var token_count = 1; token_count < line_tokens.length; token_count++ ){
+
+            if( line_tokens[token_count].startsWith( '"' ) && !has_prompt ){
                 has_prompt = true;
                 idx_prompt_start = token_count
 
@@ -146,7 +147,7 @@ class Lexer {
                 idx_prompt_end = token_count
             }
         }
-
+        
         if( idx_prompt_start != -1 & idx_prompt_end != -1 ){
             for( var idx = idx_prompt_start; idx <= idx_prompt_end; idx++ ){
                 expr.push( line_tokens[idx] );
@@ -435,7 +436,7 @@ class Lexer {
         return {
             CMD: 'ASSIGN',
             VAR: line_tokens[1],
-            TYPE: line_tokens[1].endsWith('$') ? 'STRING' : 'NUM',
+            TYPE: line_tokens[1].endsWith('$') ? 'STR' : 'NUM',
             EXPR: expr_lexer.parse(expr),
         };
     }
