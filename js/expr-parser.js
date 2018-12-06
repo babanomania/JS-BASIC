@@ -24,8 +24,12 @@ class ExprParser {
         ];
 
         var inbuild_functions =[
-            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'RND', 'SIN', 'SQR', 'TAN', 'CLS'
-        ]
+            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'SIN', 'SQR', 'TAN'
+        ];
+
+        var inbuild_functions_single =[
+            'RND', 'CLS'
+        ];
 
         var inbuild_functions_opcode ={
             'ABS' : 'CALL_ABS', 
@@ -79,7 +83,7 @@ class ExprParser {
 
             return return_opcode;
 
-        } else if( inbuild_functions.indexOf( tokens.FUNC_NAME ) > 0 ){
+        } else if( inbuild_functions.indexOf( tokens.FUNC_NAME ) >= 0 ){
 
             var expr_codes = this.parse( tokens.EXPR );
             var return_opcode = [];
@@ -93,8 +97,18 @@ class ExprParser {
 
             return return_opcode;
 
+        } else if( inbuild_functions_single.indexOf( tokens.FUNC_NAME ) >= 0 ){
+
+            var return_opcode = [];
+            return_opcode.push({
+                CODE: inbuild_functions_opcode[ tokens.FUNC_NAME ], 
+            });
+
+            return return_opcode;
+
         } else {
-            console.log( "nothing found for ", tokens )
+            console.log( "nothing found for ", tokens );
+            console.log( "inbuild_functions_single.indexOf( tokens.FUNC_NAME ) = ", inbuild_functions_single.indexOf( tokens.FUNC_NAME ) );
         }
 
 

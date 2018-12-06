@@ -34,11 +34,22 @@ class ExprLexer {
         };
 
         var inbuild_functions =[
-            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'RND', 'SIN', 'SQR', 'TAN', 'CLS'
+            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'SIN', 'SQR', 'TAN', 'CLS'
+        ]
+
+        var inbuild_functions_single =[
+            'RND', 'CLS'
         ]
 
         var expr_tokens = [];
-        if( tokens.length == 1 ){
+        if( ( tokens.length == 1 ) && ( tokens[0] == 'RND' ) ){
+
+            return {
+                ECMD: 'CALL',
+                FUNC_NAME: tokens[0],
+            };
+
+        } else if( tokens.length == 1 ){
 
             var type = null;
             if( tokens[0] ){
@@ -52,7 +63,6 @@ class ExprLexer {
                 } else {
                     type = 'NUM';
                 }
-
             }
 
             return {
@@ -64,7 +74,14 @@ class ExprLexer {
         } else if( ( tokens[0] == '(' ) && ( tokens[ tokens.length - 1 ] == ')' ) ){
             return this.parse( tokens.splice( 1, tokens.length - 2 ) );
 
-        } else if ( inbuild_functions.indexOf( tokens[0] ) > 0 ){
+        } else if ( inbuild_functions_single.indexOf( tokens[0] ) > 0 ){
+
+            return {
+                ECMD: 'CALL',
+                FUNC_NAME: tokens[0],
+            };
+
+        }else if ( inbuild_functions.indexOf( tokens[0] ) > 0 ){
 
             var expr = [];
             for( var token_count = 2; token_count < ( tokens.length - 1 ); token_count++ ){

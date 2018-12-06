@@ -32,30 +32,30 @@ class Runtime{
             'PRINT': this.exec_print,
             'INPUT_PROMPT': this.exec_input_prompt,
             'INPUT_NOPROMPT': this.exec_input_noprompt,
-            'OP_GT': null,
-            'OP_LT': null,
-            'OP_OR': null,
-            'OP_AND': null,
-            'OP_DIV': null,
-            'OP_MUL': null,
+            'OP_GT': this.exec_op_gt,
+            'OP_LT': this.exec_op_lt,
+            'OP_OR': this.exec_op_or,
+            'OP_AND': this.exec_op_and,
+            'OP_DIV': this.exec_op_div,
+            'OP_MUL': this.exec_op_mul,
             'OP_ADD': this.exec_op_add,
-            'OP_SUBT': null,
-            'CALL_ABS': null, 
-            'CALL_ATN': null, 
-            'CALL_COS': null, 
-            'CALL_EXP': null, 
-            'CALL_INT': null, 
-            'CALL_LOG': null, 
-            'CALL_RND': null, 
-            'CALL_SIN': null, 
-            'CALL_SQR': null, 
-            'CALL_TAN': null, 
-            'CALL_CLS': null,
-            'END': null,
+            'OP_SUBT': this.exec_op_subt,
+            'CALL_ABS': this.exec_call_abs,
+            'CALL_ATN': this.exec_call_atn, 
+            'CALL_COS': this.exec_call_cos,
+            'CALL_EXP': this.exec_call_exp, 
+            'CALL_INT': this.exec_call_int, 
+            'CALL_LOG': this.exec_call_log, 
+            'CALL_RND': this.exec_call_rnd, 
+            'CALL_SIN': this.exec_call_sin, 
+            'CALL_SQR': this.exec_call_sqr,
+            'CALL_TAN': this.exec_call_tan, 
+            'CALL_CLS': this.exec_call_cls,
+            'END': this.exec_end,
         };
 
         var loop_breakers = [
-            'INPUT_PROMPT', 'INPUT_NOPROMPT',
+            'INPUT_PROMPT', 'INPUT_NOPROMPT', 'END',
         ]
 
         var doloop = true;
@@ -180,7 +180,7 @@ class Runtime{
             var_preval.VAL = value;
 
             if( ( var_preval.TYPE == 'NUM' ) && ( isNaN(value) ) ){
-                throw "Runtime Error In Line " + line_num + ", could not assign " + var_preval.TYPE + " to string " ;
+                throw "Runtime Error In Line " + that_opcode.LINE_NUM + ", could not assign " + var_preval.TYPE + " to string " ;
             }
 
             instance2.execute();
@@ -200,7 +200,7 @@ class Runtime{
             var_preval.VAL = value;
 
             if( ( var_preval.TYPE == 'NUM' ) && ( isNaN(value) ) ){
-                throw "Runtime Error In Line " + line_num + ", could not assign " + var_preval.TYPE + " to string " ;
+                throw "Runtime Error In Line " + that_opcode.LINE_NUM + ", could not assign " + var_preval.TYPE + " to string " ;
             }
 
             instance2.execute();
@@ -209,19 +209,303 @@ class Runtime{
 
     }
 
+    exec_op_gt( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 = Number(val2.VAL) > Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
+
+    exec_op_lt( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 = Number(val2.VAL) < Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
+
+    exec_op_or( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'BOOL' || val2.TYPE != 'BOOL' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be boolean" ;
+        }
+
+        var val3 = val2.VAL || val1.VAL;
+
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
+
+    exec_op_and( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'BOOL' || val2.TYPE != 'BOOL' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be boolean" ;
+        }
+
+        var val3 = val2.VAL && val1.VAL;
+
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
+
+    exec_op_div( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 = Number(val2.VAL) / Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_op_mul( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 =  Number(val2.VAL) * Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
     exec_op_add( instance, opcode ){
 
         var val1 = instance.var_stack_pop( instance );
         var val2 = instance.var_stack_pop( instance );
-        var val3 = val2.VAL + val1.VAL;
+        var val3 = null;
 
-        console.log( "exec_op_add, val1 ", val1 );
-        console.log( "exec_op_add, val2 ", val2 );
-        console.log( "exec_op_add, val3 ", val3 );
+        if( val1.TYPE == 'NUM' && val2.TYPE == 'NUM' ){
+            val3 =  Number(val2.VAL) + Number(val1.VAL);
+
+        } else {
+            val3 = val2.VAL + val1.VAL;
+        }
+
+        console.log( "val3 ", val3 );
 
         instance.variable_stack.push({
             TYPE: ( val1.TYPE == 'STR' || val2.TYPE == 'STR' ) ? 'STR' : 'NUM',
             VAL: val3,
         });
+    }
+
+    exec_op_subt( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 =  Number(val2.VAL) - Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_abs( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  abs(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_atn( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.atan(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_cos( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.cos(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_exp( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.exp(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_int( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.line_num + ", type need to be number" ;
+        }
+
+        var val3 =  Number(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_log( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.log(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_rnd( instance, opcode ){
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: Math.random(),
+        });
+    }
+
+    exec_call_sin( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.sin(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_sqr( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.sqrt(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_tan( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+
+        if( val.TYPE != 'NUM'  ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be number" ;
+        }
+
+        var val3 =  Math.tan(val.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'NUM',
+            VAL: val3,
+        });
+    }
+
+    exec_call_cls( instance, opcode ){
+        instance.terminal.clear();
+    }
+
+    exec_end( instance, opcode ){
+        console.log( "That's All Folks" );
     }
 }

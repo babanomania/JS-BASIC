@@ -6,10 +6,19 @@ const runtime = new Runtime( terminal );
 const clear_btn = document.querySelector('#clear_btn');
 clear_btn.addEventListener( 'click', function(event){
     runtime.clear();
+
+    var error = document.querySelector('#error');
+    error.innerHTML = '';
+    error.style.display = 'none';
+    
 });
 
 const run_btn = document.querySelector('#run_btn');
 run_btn.addEventListener( 'click', function(event){
+
+    var error = document.querySelector('#error');
+    error.innerHTML = '';
+    error.style.display = 'none';
 
     var editor = document.querySelector('#editor');
     if( editor.value ){
@@ -45,7 +54,10 @@ run_btn.addEventListener( 'click', function(event){
             */
 
         } catch(err){
-            console.error( err )
+            console.error( err );
+            var error = document.querySelector('#error');
+            error.style.display = 'block';
+            error.innerHTML = err;
         }
     }
 

@@ -12,3 +12,12 @@
 45 PRINT "Hello " + B$
 50 END
 
+
+10 LET A  = 10
+20 LET B$ = ""
+20 PRINT RND
+40 INPUT "what is your name " B$
+45 PRINT "Hello " + B$
+50 END
+                  
+        

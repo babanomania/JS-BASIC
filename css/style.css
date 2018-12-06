@@ -24,3 +24,7 @@ ul.output li input, ul.output li input:hover, ul.output li input:focus{
 ul.output li, ul.output li p, ul.output li input {
     margin-bottom: 0rem;
 }
+.error{
+    padding-left: 2em;
+    color: red;
+}
