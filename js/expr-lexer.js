@@ -34,7 +34,7 @@ class ExprLexer {
         };
 
         var inbuild_functions =[
-            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'SIN', 'SQR', 'TAN', 'CLS'
+            'ABS', 'ATN', 'COS', 'EXP', 'INT', 'LOG', 'SIN', 'SQR', 'TAN'
         ]
 
         var inbuild_functions_single =[
