@@ -32,6 +32,7 @@ class Runtime{
             'PRINT': this.exec_print,
             'INPUT_PROMPT': this.exec_input_prompt,
             'INPUT_NOPROMPT': this.exec_input_noprompt,
+            'GOTO': this.exec_goto,
             'OP_GT': this.exec_op_gt,
             'OP_LT': this.exec_op_lt,
             'OP_OR': this.exec_op_or,
@@ -75,10 +76,8 @@ class Runtime{
 
             if( loop_breakers.indexOf( code ) >= 0 ){
                 doloop = false;
-            }
-            
+            }   
         }
-
     }
 
     var_stack_pop( instance ){
@@ -499,6 +498,13 @@ class Runtime{
             TYPE: 'NUM',
             VAL: val3,
         });
+    }
+
+    exec_goto( instance, opcode ){
+
+        var value = opcode.VAL;
+        instance.program_counter = value - 1;
+
     }
 
     exec_call_cls( instance, opcode ){

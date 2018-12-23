@@ -13,10 +13,13 @@ class Parser {
             'ASSIGN': this.parse_assign,
             'PRINT': this.parse_print,
             'INPUT': this.parse_input,
+            'GOTO': this.parse_goto,
             'END': this.parse_end,
         };
 
         var opcodes = [];
+        var lineno_map = {};
+
         for( var i = 0; i < tokens.length; i++ ){
             var line_tokens = tokens[i];
 
@@ -24,6 +27,8 @@ class Parser {
             var callback = callback_maps[line_tokens.CMD];
             if( callback ){
                 var callback_opcodes = (callback)(line_tokens) ;
+
+                lineno_map[line_num] = opcodes.length;
 
                 for( var idx = 0; idx < callback_opcodes.length; idx++ ){
 
@@ -33,7 +38,16 @@ class Parser {
                     opcodes.push( this_callback_opcode );
                 }
             }
+        }
 
+        //Remap GOTO's
+        for( var idx = 0; idx < opcodes.length; idx++ ){
+
+            var this_opcode = opcodes[idx] ;
+            if( this_opcode.CODE == 'GOTO' ){
+                var target_linenum = this_opcode.VAL;
+                this_opcode.VAL = lineno_map[target_linenum];
+            }
         }
 
         return opcodes;
@@ -127,6 +141,36 @@ class Parser {
                 CODE:'INPUT_NOPROMPT', VAL: varb,
             });
 
+        }
+
+        return opcodes_this;
+    }
+
+    parse_goto( line_tokens ){
+
+        var opcodes_this = []
+
+        var expr = line_tokens.EXPR;
+        if( expr ){
+
+            if( expr.indexOf( ',' ) > 0 ){
+
+                var each_line = expr.split(',')
+                for( var lnno =0 ; lnno < each_line.length; each_line++ ){
+                   
+                    var this_lineno = each_line[lnno];
+                    opcodes_this.push({
+                        CODE:'GOTO', VAL: this_lineno,
+                    });
+                }
+
+            } else {
+                opcodes_this.push({
+                    CODE:'GOTO', VAL: expr,
+                });
+
+            }
+            
         }
 
         return opcodes_this;
