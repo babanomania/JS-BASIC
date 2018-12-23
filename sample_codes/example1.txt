@@ -19,5 +19,5 @@
 40 INPUT "what is your name " B$
 45 PRINT "Hello " + B$
 50 END
-                  
         
+http://www.vintage-basic.net/downloads/Vintage_BASIC_Users_Guide.html

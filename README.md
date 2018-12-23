@@ -54,7 +54,6 @@ The runtime should be able to handle the below basic commands
 
 ### Input and output:
 
-  - [ ] `LIST`—displays all inputted code.
   - [x] `PRINT`—displays a message on the screen or other output device.
   - [x] `INPUT`—asks the user to enter the value of a variable. The
     statement may include a prompt message.
