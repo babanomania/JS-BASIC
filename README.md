@@ -11,8 +11,8 @@ A javascript based minimal basic compiler and runtime envionment
 * [x] Emulated Terminal, that can handle input with callbacks
 * [x] Run/Clear Button
 * [x] Create a lexer, that can parse raw code and generated tokenised code
-* [ ] Create a parser, that can parse tokenised code and generated op code
-* [ ] Create a runtime, that can run op code and interact with emulated terminal for output and input
+* [x] Create a parser, that can parse tokenised code and generated op code
+* [x] Create a runtime, that can run op code and interact with emulated terminal for output and input
 * [ ] Debugging Controls
 * [ ] Show variable and call stack while debugging mode
 
@@ -24,7 +24,7 @@ The runtime should be able to handle the below basic commands
 
   - [x] `LET`—assigns a value (which may be the result of an
     [expression](expression_\(programming\) "wikilink")) to a variable.
-  -  [ ]`DATA`—holds a list of values which are assigned sequentially using
+  - [ ] `DATA`—holds a list of values which are assigned sequentially using
     the READ command.
 
 ### Program flow control:
