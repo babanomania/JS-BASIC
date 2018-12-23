@@ -4,6 +4,7 @@ class Runtime{
         this.variable_stack = [];
         this.variable_defs = {};
         this.program_counter = 0;
+        this.call_stack = [];
         this.terminal = terminal;
     }
 
@@ -33,6 +34,8 @@ class Runtime{
             'INPUT_PROMPT': this.exec_input_prompt,
             'INPUT_NOPROMPT': this.exec_input_noprompt,
             'GOTO': this.exec_goto,
+            'GOSUB': this.exec_gosub,
+            'RETURN': this.exec_return,
             'OP_GT': this.exec_op_gt,
             'OP_LT': this.exec_op_lt,
             'OP_OR': this.exec_op_or,
@@ -63,7 +66,7 @@ class Runtime{
         for( ; doloop && ( this.program_counter < this.op_codes.length ); this.program_counter++ ){
 
             var opcodes = this.op_codes[this.program_counter];
-            console.log( opcodes, this );
+            console.log( "[" + this.program_counter + "]", opcodes.CODE, opcodes.VAL );
 
             var line_num = opcodes.LINE_NUM;
             var code = opcodes.CODE;
@@ -323,8 +326,6 @@ class Runtime{
             val3 = val2.VAL + val1.VAL;
         }
 
-        console.log( "val3 ", val3 );
-
         instance.variable_stack.push({
             TYPE: ( val1.TYPE == 'STR' || val2.TYPE == 'STR' ) ? 'STR' : 'NUM',
             VAL: val3,
@@ -501,10 +502,19 @@ class Runtime{
     }
 
     exec_goto( instance, opcode ){
-
         var value = opcode.VAL;
         instance.program_counter = value - 1;
+    }
 
+    exec_gosub( instance, opcode ){
+        var value = opcode.VAL;
+        instance.call_stack.push( instance.program_counter );
+        instance.program_counter = value - 1;
+    }
+
+    exec_return( instance, opcode ){
+        var parent_lineno = instance.call_stack.pop();
+        instance.program_counter = parent_lineno;
     }
 
     exec_call_cls( instance, opcode ){
@@ -512,6 +522,7 @@ class Runtime{
     }
 
     exec_end( instance, opcode ){
+        instance.program_counter = instance.op_codes.length
         console.log( "That's All Folks" );
     }
 }

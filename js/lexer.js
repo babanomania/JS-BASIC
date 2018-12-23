@@ -22,7 +22,7 @@ class Lexer {
             'GOTO': this.parse_goto,
             'GOSUB': this.parse_gosub,
             'RETURN': this.parse_return,
-            'SUB': this.parse_gosub,
+            'DEFSUB': this.parse_defsub,
             'ON': this.parse_on,
             'END': this.parse_end,
         }
@@ -43,7 +43,7 @@ class Lexer {
             if( !callback ){
             
                 if( cmd.endsWith(':') ){
-                    callback = callback_maps['SUB'];
+                    callback = callback_maps['DEFSUB'];
 
                 } else if ( line_tokens[2] = '=' ) {
                     callback = this.parse_assign;
@@ -85,7 +85,7 @@ class Lexer {
                 line = line.replace( /\>/g, ' > ' );
                 line = line.replace(/\s\s+/g, ' ');
                 line = line.trim();
-                console.log( line )
+                //console.log( line )
 
                 codes_lines.push( line );
             }
@@ -337,6 +337,16 @@ class Lexer {
         return {
             CMD: 'RETURN',
             EXPR: line_tokens
+        }
+    }
+
+    parse_defsub( line_tokens ){
+
+        var cmd = line_tokens[1];
+
+        return {
+            CMD: 'DEFSUB',
+            EXPR: cmd.substring( 0, cmd.length - 1 ),
         }
     }
 

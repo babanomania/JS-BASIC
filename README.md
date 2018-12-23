@@ -26,6 +26,7 @@ The runtime should be able to handle the below basic commands
     [expression](expression_\(programming\) "wikilink")) to a variable.
   - [ ] `DATA`—holds a list of values which are assigned sequentially using
     the READ command.
+  - [ ] `READ`-reads data from DATA statements into variables
 
 ### Program flow control:
 
@@ -42,7 +43,7 @@ The runtime should be able to handle the below basic commands
     evaluated before each iteration of the loop, or after.
   - [x] [`GOTO`](GOTO "wikilink")—jumps to a numbered or labelled line in
     the program.
-  - [ ] `GOSUB`—jumps to a numbered or labelled line, executes the code it
+  - [x] `GOSUB`—jumps to a numbered or labelled line, executes the code it
     finds there until it reaches a RETURN Command, on which it jumps
     back to the operator following the GOSUB – either after a colon, or
     on the next line. This is used to implement

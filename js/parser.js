@@ -14,11 +14,15 @@ class Parser {
             'PRINT': this.parse_print,
             'INPUT': this.parse_input,
             'GOTO': this.parse_goto,
+            'DEFSUB': this.parse_defsub,
+            'GOSUB': this.parse_gosub,
+            'RETURN': this.parse_return,
             'END': this.parse_end,
         };
 
         var opcodes = [];
         var lineno_map = {};
+        var sub_map = {};
 
         for( var i = 0; i < tokens.length; i++ ){
             var line_tokens = tokens[i];
@@ -35,16 +39,31 @@ class Parser {
                     var this_callback_opcode = callback_opcodes[idx] ;
                     this_callback_opcode.LINE_NUM = line_num;
 
+                    if( this_callback_opcode.CODE == 'DEFSUB' ){
+                        var subname = this_callback_opcode.VAL;
+                        sub_map[subname] = line_num;
+                    }
+
                     opcodes.push( this_callback_opcode );
                 }
             }
         }
 
-        //Remap GOTO's
+        //Remap GOTO and GOSUB
         for( var idx = 0; idx < opcodes.length; idx++ ){
 
             var this_opcode = opcodes[idx] ;
-            if( this_opcode.CODE == 'GOTO' ){
+            if( this_opcode.CODE == 'GOSUB' ){
+                var target_sub = this_opcode.VAL;
+                this_opcode.CODE = 'GOSUB';
+                this_opcode.VAL = sub_map[target_sub];
+            } 
+        }
+        
+        for( var idx = 0; idx < opcodes.length; idx++ ){
+
+            var this_opcode = opcodes[idx] ;
+            if( this_opcode.CODE == 'GOTO' || this_opcode.CODE == 'GOSUB' ){
                 var target_linenum = this_opcode.VAL;
                 this_opcode.VAL = lineno_map[target_linenum];
             }
@@ -147,33 +166,22 @@ class Parser {
     }
 
     parse_goto( line_tokens ){
+        var lineno = line_tokens.EXPR;
+        return [{ CODE: 'GOTO', VAL: lineno }];
+    }
 
-        var opcodes_this = []
+    parse_defsub( line_tokens ){
+        var subname = line_tokens.EXPR;
+        return [{ CODE: 'DEFSUB', VAL: subname }];
+    }
 
-        var expr = line_tokens.EXPR;
-        if( expr ){
+    parse_gosub( line_tokens ){
+        var subname = line_tokens.EXPR;
+        return [{ CODE: 'GOSUB', VAL: subname }];
+    }
 
-            if( expr.indexOf( ',' ) > 0 ){
-
-                var each_line = expr.split(',')
-                for( var lnno =0 ; lnno < each_line.length; each_line++ ){
-                   
-                    var this_lineno = each_line[lnno];
-                    opcodes_this.push({
-                        CODE:'GOTO', VAL: this_lineno,
-                    });
-                }
-
-            } else {
-                opcodes_this.push({
-                    CODE:'GOTO', VAL: expr,
-                });
-
-            }
-            
-        }
-
-        return opcodes_this;
+    parse_return( line_tokens ){
+        return [{ CODE: 'RETURN', VAL: null }];
     }
 
     parse_end( line_tokens ){
