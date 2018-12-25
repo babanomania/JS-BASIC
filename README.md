@@ -15,6 +15,7 @@ A javascript based minimal basic compiler and runtime envionment
 * [x] Create a runtime, that can run op code and interact with emulated terminal for output and input
 * [ ] Debugging Controls
 * [ ] Show variable and call stack while debugging mode
+* [ ] Show syntax errors
 
 ## Supported Commands
 
