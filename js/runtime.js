@@ -38,6 +38,8 @@ class Runtime{
             'RETURN': this.exec_return,
             'OP_GT': this.exec_op_gt,
             'OP_LT': this.exec_op_lt,
+            'OP_GTE': this.exec_op_gte,
+            'OP_LTE': this.exec_op_lte,
             'OP_OR': this.exec_op_or,
             'OP_AND': this.exec_op_and,
             'OP_DIV': this.exec_op_div,
@@ -55,6 +57,8 @@ class Runtime{
             'CALL_SQR': this.exec_call_sqr,
             'CALL_TAN': this.exec_call_tan, 
             'CALL_CLS': this.exec_call_cls,
+            'IF': this.exec_if,
+            'END-IF-THEN': this.exec_if_then,
             'END': this.exec_end,
         };
 
@@ -238,7 +242,42 @@ class Runtime{
         }
 
         var val3 = Number(val2.VAL) < Number(val1.VAL);
+        
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
 
+
+    exec_op_gte( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 = Number(val2.VAL) >= Number(val1.VAL);
+
+        instance.variable_stack.push({
+            TYPE: 'BOOL',
+            VAL: val3,
+        });
+    }
+
+    exec_op_lte( instance, opcode ){
+
+        var val1 = instance.var_stack_pop( instance );
+        var val2 = instance.var_stack_pop( instance );
+
+        if( val1.TYPE != 'NUM' || val2.TYPE != 'NUM' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", both types need to be number" ;
+        }
+
+        var val3 = Number(val2.VAL) <= Number(val1.VAL);
+        
         instance.variable_stack.push({
             TYPE: 'BOOL',
             VAL: val3,
@@ -519,6 +558,63 @@ class Runtime{
 
     exec_call_cls( instance, opcode ){
         instance.terminal.clear();
+    }
+
+    exec_if( instance, opcode ){
+        
+        var then_index = -1;
+        var else_index = -1;
+        var end_if_index = -1;
+
+        var doloop = true;
+        for( var inx = instance.program_counter; doloop && inx < instance.op_codes.length; inx++ ){
+            if( instance.op_codes[inx].CODE == 'BEGIN-IF-THEN' ){
+                then_index = inx;
+
+            } else if( instance.op_codes[inx].CODE == 'BEGIN-IF-ELSE' ){
+                else_index = inx;
+
+            }else if( instance.op_codes[inx].CODE == 'END-IF' ){
+                end_if_index = inx;
+                doloop = false;
+            }
+        }
+
+        var val = instance.var_stack_pop( instance );
+        
+        if( !val || val.TYPE != 'BOOL' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be boolean" ;
+
+        } else {
+
+            if( val.VAL ){
+                instance.program_counter = then_index > 0 ? then_index : end_if_index;
+
+            } else {
+                instance.program_counter = else_index > 0 ? else_index : end_if_index;
+            }
+
+        }
+
+    }
+
+    exec_if_then( instance, opcode ){
+        
+        var else_index = -1;
+        var end_if_index = -1;
+
+        var doloop = true;
+        for( var inx = instance.program_counter; doloop && inx < instance.op_codes.length; inx++ ){
+            if( instance.op_codes[inx].CODE == 'BEGIN-IF-ELSE' ){
+                else_index = inx;
+
+            }else if( instance.op_codes[inx].CODE == 'END-IF' ){
+                end_if_index = inx;
+                doloop = false;
+            }
+        }
+
+        instance.program_counter = else_index > 0 ? else_index : end_if_index;
     }
 
     exec_end( instance, opcode ){

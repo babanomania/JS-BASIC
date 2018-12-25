@@ -15,6 +15,8 @@ class ExprParser {
         var OPCODES = [
             'OP_GT',
             'OP_LT',
+            'OP_GTE',
+            'OP_LTE',
             'OP_OR',
             'OP_AND',
             'OP_DIV',
@@ -60,7 +62,7 @@ class ExprParser {
         } else if( tokens.TYPE == 'VAR'  & tokens.ECMD == 'SET' ){
             return [{ CODE: 'PUSH_VAR', VAL: tokens.VAL }];
 
-        } else if( OPCODES.indexOf( tokens.OP_NAME ) > 0 ){
+        } else if( OPCODES.indexOf( tokens.OP_NAME ) >= 0 ){
 
             var lval_codes = this.parse( tokens.LVALUE );
             var rval_codes = this.parse( tokens.RVALUE );

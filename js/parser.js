@@ -17,6 +17,7 @@ class Parser {
             'DEFSUB': this.parse_defsub,
             'GOSUB': this.parse_gosub,
             'RETURN': this.parse_return,
+            'IF': this.parse_if,
             'END': this.parse_end,
         };
 
@@ -55,8 +56,9 @@ class Parser {
             var this_opcode = opcodes[idx] ;
             if( this_opcode.CODE == 'GOSUB' ){
                 var target_sub = this_opcode.VAL;
-                this_opcode.CODE = 'GOSUB';
-                this_opcode.VAL = sub_map[target_sub];
+                if( sub_map[target_sub] ){
+                    this_opcode.VAL = sub_map[target_sub];
+                }
             } 
         }
         
@@ -65,7 +67,9 @@ class Parser {
             var this_opcode = opcodes[idx] ;
             if( this_opcode.CODE == 'GOTO' || this_opcode.CODE == 'GOSUB' ){
                 var target_linenum = this_opcode.VAL;
-                this_opcode.VAL = lineno_map[target_linenum];
+                if( lineno_map[target_linenum] ){
+                    this_opcode.VAL = lineno_map[target_linenum];
+                }
             }
         }
 
@@ -138,7 +142,7 @@ class Parser {
 
     parse_input( line_tokens ){
         
-        var opcodes_this = []
+        var opcodes_this = [];
 
         var varb = line_tokens.VAR;
         var expr = line_tokens.EXPR;
@@ -182,6 +186,42 @@ class Parser {
 
     parse_return( line_tokens ){
         return [{ CODE: 'RETURN', VAL: null }];
+    }
+
+    parse_if( line_tokens ){
+
+        var if_expr = line_tokens.EXPR;
+        var if_expr_opcodes = expr_parser.parse( if_expr );
+
+        var subparser = new Parser();
+
+        var then_cmd = line_tokens.THEN_EXPR;
+        var then_opcodes = subparser.parse( then_cmd );
+
+        var else_cmd = line_tokens.ELSE_EXPR;
+        var else_opcodes = subparser.parse( else_cmd );
+
+        var opcodes_this = [];
+
+        for( var idx = 0; idx < if_expr_opcodes.length; idx++ ){
+            opcodes_this.push( if_expr_opcodes[idx] );
+        }
+        opcodes_this.push({ CODE: 'IF', VAL: null });
+
+        opcodes_this.push({ CODE: 'BEGIN-IF-THEN', VAL: null });
+        for( var idx = 0; idx < then_opcodes.length; idx++ ){
+            opcodes_this.push( then_opcodes[idx] );
+        }
+        opcodes_this.push({ CODE: 'END-IF-THEN', VAL: null });
+
+        opcodes_this.push({ CODE: 'BEGIN-IF-ELSE', VAL: null });
+        for( var idx = 0; idx < else_opcodes.length; idx++ ){
+            opcodes_this.push( else_opcodes[idx] );
+        }
+        opcodes_this.push({ CODE: 'END-IF-ELSE', VAL: null });
+        opcodes_this.push({ CODE: 'END-IF', VAL: null });
+
+        return opcodes_this;
     }
 
     parse_end( line_tokens ){

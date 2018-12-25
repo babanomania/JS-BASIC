@@ -83,6 +83,10 @@ class Lexer {
                 line = line.replace( /\\/g, ' \\ ' );
                 line = line.replace( /\</g, ' < ' );
                 line = line.replace( /\>/g, ' > ' );
+                line = line.replace( /\<=/g, ' <= ' );
+                line = line.replace( / <  = /g, ' <= ' );
+                line = line.replace( /\>=/g, ' >= ' );
+                line = line.replace( / >  = /g, ' >= ' );
                 line = line.replace(/\s\s+/g, ' ');
                 line = line.trim();
                 //console.log( line )
@@ -171,6 +175,8 @@ class Lexer {
         var then_index = -1;
         var else_index = -1;
 
+        var line_num = line_tokens[0];
+
         for( var index = 0 ; index < line_tokens.length; index++ ){
             if( line_tokens[index] == 'IF' ){
                 if_index = index;
@@ -187,21 +193,25 @@ class Lexer {
             if_expr.push( line_tokens[index] );
         }
 
+        then_expr.push( line_num );
         for( var index = ( then_index + 1 ) ; index < else_index; index ++ ){
+
             then_expr.push( line_tokens[index] );
         }
-
+        
         if( else_index > 0 ){
+            else_expr.push( line_num );
             for( var index = ( else_index + 1 ) ; index < line_tokens.length; index ++ ){
                 else_expr.push( line_tokens[index] );
             }
         }
 
+        var sublexer = new Lexer();
         return {
             CMD: 'IF',
             EXPR: expr_lexer.parse(if_expr),
-            THEN_EXPR: expr_lexer.parse(then_expr),
-            ELSE_EXPR: expr_lexer.parse(else_expr),
+            THEN_EXPR: sublexer.parse( lexer.cleanup( then_expr.join(' ') ) ),
+            ELSE_EXPR: sublexer.parse( lexer.cleanup( else_expr.join(' ') ) ),
         };
     }
 

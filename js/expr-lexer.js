@@ -16,6 +16,8 @@ class ExprLexer {
             'AND',
             '<',
             '>',
+            '<=',
+            '>=',
             '/',
             '*',
             '+',
@@ -23,8 +25,10 @@ class ExprLexer {
         ];
 
         var OPCODES = {
-            '<': 'OP_GT',
-            '>': 'OP_LT',
+            '<': 'OP_LT',
+            '>': 'OP_GT',
+            '<=': 'OP_LTE',
+            '>=': 'OP_GTE',
             'OR': 'OP_OR',
             'AND': 'OP_AND',
             '/': 'OP_DIV',

@@ -33,6 +33,7 @@ run_btn.addEventListener( 'click', function(event){
             var tokens = lexer.parse( code_lines );
             console.log( '2. After Lexical analysis' );
             console.table( tokens );
+            console.log( tokens );
             console.log();
 
             var op_codes = parser.parse( tokens );
