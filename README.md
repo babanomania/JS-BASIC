@@ -30,7 +30,7 @@ The runtime should be able to handle the below basic commands
 
 ### Program flow control:
 
-  - [ ] `IF ... THEN ... {ELSE}`—used to perform comparisons or make
+  - [x] `IF ... THEN ... {ELSE}`—used to perform comparisons or make
     decisions.
   - [ ] `FOR ... TO ... {STEP} ... NEXT`—repeat a section of code a given
     number of times. A variable that acts as a counter is available
