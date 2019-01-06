@@ -218,8 +218,8 @@ class Lexer {
     parse_for( line_tokens ){
 
         var for_expr = [];
-        var to_expr = [];
-        var step_expr = [];
+        var to_expr;
+        var step_expr;
 
         var for_index = -1;
         var to_index = -1;
@@ -227,35 +227,45 @@ class Lexer {
 
         for( var index = 0 ; index < line_tokens.length; index++ ){
             if( line_tokens[index] == 'FOR' ){
-                for_index = index;
+                for_index = index + 1;
 
             } else if( line_tokens[index] == 'TO' ){
-                to_index = index;
+                to_index = index + 1;
 
-            } else if( line_tokens[index] == 'NEXT' ){
-                step_index = index;
+            } else if( line_tokens[index] == 'STEP' ){
+                step_index = index + 1;
             }
         }
 
-        for( var index = ( for_expr + 1 ) ; index < to_index; index ++ ){
+        for_expr.push( line_tokens[0] );
+        for_expr.push( 'LET' );
+        for( var index = for_index ; index < to_index - 1; index ++ ){
             for_expr.push( line_tokens[index] );
         }
 
-        for( var index = ( to_index + 1 ) ; index < step_index; index ++ ){
-            to_expr.push( line_tokens[index] );
+        if( step_index > 0 ){
+            for( var index = to_index; index < step_index - 1; index ++ ){
+                to_expr = line_tokens[index];
+            }
+
+            for( var index = step_index ; index < line_tokens.length; index ++ ){
+                step_expr = line_tokens[index];
+            }
+
+        } else {
+            for( var index = to_index; index < line_tokens.length; index ++ ){
+                to_expr = line_tokens[index];
+            }
+
         }
 
-        if( step_expr > 0 ){
-            for( var index = ( step_index + 1 ) ; index < line_tokens.length; index ++ ){
-                step_expr.push( line_tokens[index] );
-            }
-        }
+        var sublexer = new Lexer();
 
         return {
             CMD: 'FOR',
-            EXPR: for_expr,
-            TO_EXPR: expr_lexer.parse(then_expr),
-            STEP_EXPR: expr_lexer.parse(step_expr),
+            EXPR: sublexer.parse([ for_expr.join(' ') ])[0],
+            TO_EXPR: to_expr,
+            STEP_EXPR: step_expr,
         };
     }
 

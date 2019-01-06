@@ -18,6 +18,8 @@ class Parser {
             'GOSUB': this.parse_gosub,
             'RETURN': this.parse_return,
             'IF': this.parse_if,
+            'FOR': this.parse_for,
+            'NEXT': this.parse_next,
             'END': this.parse_end,
         };
 
@@ -62,6 +64,7 @@ class Parser {
             } 
         }
         
+        //special handling for goto and gosub
         for( var idx = 0; idx < opcodes.length; idx++ ){
 
             var this_opcode = opcodes[idx] ;
@@ -72,6 +75,34 @@ class Parser {
                 }
             }
         }
+
+        //special handling for for-step-next
+        var for_step_opcodes = [];
+        var new_opcodes = [];
+
+        for( var idx = 0; idx < opcodes.length; idx++ ){
+
+            var this_opcode = opcodes[idx] ;
+            if( this_opcode.CODE == 'FOR-STEP' ){
+                for_step_opcodes.push( [this_opcode.VAL] );
+
+            } else if( this_opcode.CODE == 'FOR-NEXT' ){
+                var last_opcodes = for_step_opcodes.pop();
+                for( var ind = 0; ind < last_opcodes.length; ind++ ){
+
+                    for( var ihx = 0; ihx < last_opcodes[ind].length; ihx++ ){
+                        new_opcodes.push( last_opcodes[ind][ihx] );
+                    }
+                }
+
+                new_opcodes.push( this_opcode );
+
+            } else {
+                new_opcodes.push( this_opcode );
+            }
+        }
+
+        opcodes = new_opcodes;
 
         return opcodes;
     }
@@ -222,6 +253,47 @@ class Parser {
         opcodes_this.push({ CODE: 'END-IF', VAL: null });
 
         return opcodes_this;
+    }
+
+    parse_for( line_tokens ){
+
+        var opcodes_this = [];
+        var subparser = new Parser();
+        var sublexer = new Lexer();
+        var subexplexer = new ExprLexer();
+        var line_num = line_tokens.LINE_NUM;
+
+        var for_expr = [ line_tokens.EXPR ];
+        var for_init_opcodes = subparser.parse(for_expr);
+
+        var for_max_expr = line_tokens.TO_EXPR;
+        var for_incr_step = line_tokens.STEP_EXPR == null ? 1 : line_tokens.STEP_EXPR ;
+        
+        var for_var = for_init_opcodes[1].VAL;
+
+        var for_check_expr = [ for_var, '<=', for_max_expr ];
+        var for_check_lexed = subexplexer.parse( for_check_expr );
+        var for_check_opcodes = expr_parser.parse( for_check_lexed );
+
+        var for_step_expr = [ line_num, 'LET', for_var, '=', for_var, '+', for_incr_step ];
+        var for_step_lexed = sublexer.parse([ for_step_expr.join(' ') ]);
+        var for_step_opcodes = subparser.parse( for_step_lexed );
+
+        for( var idx = 0; idx < for_init_opcodes.length; idx++ ){
+            opcodes_this.push(for_init_opcodes[idx]);
+        }
+        opcodes_this.push({ CODE: 'FOR-START', VAL: null });
+        for( var idx = 0; idx < for_check_opcodes.length; idx++ ){
+            opcodes_this.push(for_check_opcodes[idx]);
+        }
+        opcodes_this.push({ CODE: 'FOR-CHECK', VAL: null });
+        opcodes_this.push({ CODE: 'FOR-STEP', VAL: for_step_opcodes });
+
+        return opcodes_this;
+    }
+
+    parse_next( line_tokens ){
+        return [{ CODE: 'FOR-NEXT', VAL: null }];
     }
 
     parse_end( line_tokens ){

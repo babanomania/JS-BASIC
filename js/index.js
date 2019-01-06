@@ -39,6 +39,7 @@ run_btn.addEventListener( 'click', function(event){
             var op_codes = parser.parse( tokens );
             console.log( '3. After Parsing' );
             console.table( op_codes );
+            console.log( op_codes );
             console.log();
 
             console.log( '4. Executing OpCodes' );

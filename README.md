@@ -33,7 +33,7 @@ The runtime should be able to handle the below basic commands
 
   - [x] `IF ... THEN ... {ELSE}`—used to perform comparisons or make
     decisions.
-  - [ ] `FOR ... TO ... {STEP} ... NEXT`—repeat a section of code a given
+  - [x] `FOR ... TO ... {STEP} ... NEXT`—repeat a section of code a given
     number of times. A variable that acts as a counter is available
     within the [loop](Control_flow#Loops "wikilink").
   - [ ] `WHILE ... WEND` and `REPEAT ... UNTIL`—repeat a section of code
