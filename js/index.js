@@ -1,4 +1,6 @@
-const terminal = new Terminal( '#terminal', 10 );
+var output_rowlen = 50;
+
+const terminal = new Terminal( '#terminal', output_rowlen );
 const lexer = new Lexer();
 const parser = new Parser();
 const runtime = new Runtime( terminal );
