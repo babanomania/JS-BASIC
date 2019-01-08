@@ -20,6 +20,8 @@ class Parser {
             'IF': this.parse_if,
             'FOR': this.parse_for,
             'NEXT': this.parse_next,
+            'WHILE': this.parse_while,
+            'WEND': this.parse_wend,
             'END': this.parse_end,
         };
 
@@ -294,6 +296,27 @@ class Parser {
 
     parse_next( line_tokens ){
         return [{ CODE: 'FOR-NEXT', VAL: null }];
+    }
+
+    parse_while( line_tokens ){
+
+        var opcodes_this = [];
+        var line_num = line_tokens.LINE_NUM;
+
+        var while_expr = line_tokens.EXPR;
+        var while_opcodes = expr_parser.parse( while_expr );
+
+        opcodes_this.push({ CODE: 'WHILE-START', VAL: null });
+        for( var idx = 0; idx < while_opcodes.length; idx++ ){
+            opcodes_this.push(while_opcodes[idx]);
+        }
+
+        opcodes_this.push({ CODE: 'WHILE-CHECK', VAL: null });
+        return opcodes_this;
+    }
+
+    parse_wend( line_tokens ){
+        return [{ CODE: 'WEND', VAL: null }];
     }
 
     parse_end( line_tokens ){

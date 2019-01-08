@@ -61,6 +61,8 @@ class Runtime{
             'END-IF-THEN': this.exec_if_then,
             'FOR-CHECK': this.exec_for_check,
             'FOR-NEXT': this.exec_for_next,
+            'WHILE-CHECK': this.exec_while_check,
+            'WEND': this.exec_wend,
             'END': this.exec_end,
         };
 
@@ -671,6 +673,61 @@ class Runtime{
         }
 
         instance.program_counter = idx_for_check;
+    }
+
+    exec_while_check( instance, opcode ){
+
+        var val = instance.var_stack_pop( instance );
+        if( val.TYPE != 'BOOL' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be boolean" ;
+
+        } else if( !val.VAL ){
+
+            var idx_wend = -1;
+
+            var open_while_loop = 0;
+            var doloop = true;
+            for( var inx = instance.program_counter; doloop && inx < instance.op_codes.length; inx++ ){
+                if( instance.op_codes[inx].CODE == 'WHILE-CHECK' ){
+                    open_while_loop++;
+                    
+                } else if ( instance.op_codes[inx].CODE == 'WEND' ){
+                    if( open_while_loop == 1 ){
+                        idx_wend = inx;
+                        doloop = false;
+    
+                    } else {
+                        open_while_loop--;
+                    }
+                }
+            }
+
+            instance.program_counter = idx_wend + 1;
+
+        }
+    }
+
+    exec_wend( instance, opcode ){
+        
+        var idx_while_start = -1;
+
+        var open_while_loop = 0;
+        var doloop = true;
+        for( var inx = instance.program_counter; doloop && inx > 0; inx-- ){
+            if( instance.op_codes[inx].CODE == 'WHILE-START' ){
+                if( open_while_loop == 1 ){
+                    idx_while_start = inx;
+                    doloop = false;
+                } else {
+                    open_while_loop--;
+                }
+
+            } else if ( instance.op_codes[inx].CODE == 'WEND' ){
+                open_while_loop++;
+            }
+        }
+
+        instance.program_counter = idx_while_start;
     }
 
     exec_end( instance, opcode ){
