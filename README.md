@@ -1,5 +1,5 @@
 # JS-BASIC
-A javascript based minimal basic compiler and runtime envionment
+A javascript based minimal basic toy compiler and runtime envionment
 
 ![example-site](screenshot.png)
 
