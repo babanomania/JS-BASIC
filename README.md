@@ -36,9 +36,12 @@ The runtime should be able to handle the below basic commands
   - [x] `FOR ... TO ... {STEP} ... NEXT`—repeat a section of code a given
     number of times. A variable that acts as a counter is available
     within the [loop](Control_flow#Loops "wikilink").
-  - [ ] `WHILE ... WEND` and `REPEAT ... UNTIL`—repeat a section of code
+  - [x] `WHILE ... WEND`—repeat a section of code
     while the specified condition is true. The condition may be
-    evaluated before each iteration of the loop, or after.
+    evaluated before each iteration of the loop.
+  - [ ] `REPEAT ... UNTIL`—repeat a section of code
+    while the specified condition is true. The condition may be
+    evaluated after each iteration of the loop.
   - [ ] `DO ... LOOP {WHILE}` or {`UNTIL`}—repeat a section of code Forever
     or While/Until the specified condition is true. The condition may be
     evaluated before each iteration of the loop, or after.

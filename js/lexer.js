@@ -321,9 +321,14 @@ class Lexer {
             expr.push( line_tokens[token_count] );
         }
 
+        // var loop_expr = [];
+        // for( var index = 0; index < expr.length; index ++ ){
+        //     loop_expr.push( expr[index] );
+        // }
+
         return {
             CMD: 'LOOP',
-            EXPR: expr,
+            EXPR: expr_lexer.parse(expr),
         }
     }
 

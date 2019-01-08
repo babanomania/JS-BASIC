@@ -63,6 +63,7 @@ class Runtime{
             'FOR-NEXT': this.exec_for_next,
             'WHILE-CHECK': this.exec_while_check,
             'WEND': this.exec_wend,
+            'LOOP': this.exec_loop,
             'END': this.exec_end,
         };
 
@@ -728,6 +729,39 @@ class Runtime{
         }
 
         instance.program_counter = idx_while_start;
+    }
+
+    exec_loop( instance, opcode ){
+        
+        var val = instance.var_stack_pop( instance );
+        if( val.TYPE != 'BOOL' ){
+            throw "Runtime Error In Line " + opcode.LINE_NUM + ", type need to be boolean" ;
+
+        } else if( val.VAL ){
+
+            var idx_do = -1;
+
+            var open_do_loop = 0;
+            var doloop = true;
+            for( var inx = instance.program_counter; doloop && inx < instance.op_codes.length; inx-- ){
+                if( instance.op_codes[inx].CODE == 'DO' ){
+                    if( open_do_loop == 1 ){
+                        idx_do = inx;
+                        doloop = false;
+    
+                    } else {
+                        open_do_loop--;
+                    }
+
+                } else if ( instance.op_codes[inx].CODE == 'LOOP' ){
+                    open_do_loop++;
+                }
+            }
+
+            instance.program_counter = idx_do;
+
+        }
+
     }
 
     exec_end( instance, opcode ){

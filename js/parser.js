@@ -22,6 +22,8 @@ class Parser {
             'NEXT': this.parse_next,
             'WHILE': this.parse_while,
             'WEND': this.parse_wend,
+            'DO': this.parse_do,
+            'LOOP': this.parse_loop,
             'END': this.parse_end,
         };
 
@@ -317,6 +319,26 @@ class Parser {
 
     parse_wend( line_tokens ){
         return [{ CODE: 'WEND', VAL: null }];
+    }
+
+    parse_do( line_tokens ){
+        return [{ CODE: 'DO', VAL: null }];
+    }
+
+    parse_loop( line_tokens ){
+        var opcodes_this = [];
+        var subexplexer = new ExprLexer();
+        var line_num = line_tokens.LINE_NUM;
+
+        var loop_expr = line_tokens.EXPR;
+        var loop_opcodes = expr_parser.parse( loop_expr );
+
+        for( var idx = 0; idx < loop_opcodes.length; idx++ ){
+            opcodes_this.push(loop_opcodes[idx]);
+        }
+
+        opcodes_this.push({ CODE: 'LOOP', VAL: null });
+        return opcodes_this;
     }
 
     parse_end( line_tokens ){
