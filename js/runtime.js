@@ -623,11 +623,19 @@ class Runtime{
 
         var idx_for_next = -1;
 
+        var open_for_loop = 0;
         var doloop = true;
         for( var inx = instance.program_counter; doloop && inx < instance.op_codes.length; inx++ ){
             if( instance.op_codes[inx].CODE == 'FOR-NEXT' ){
-                idx_for_next = inx;
-                doloop = false;
+                if( open_for_loop == 1 ){
+                    idx_for_next = inx;
+                    doloop = false;
+
+                } else {
+                    open_for_loop--;
+                }
+            } else if ( instance.op_codes[inx].CODE == 'FOR-CHECK' ){
+                open_for_loop++;
             }
         }
 
@@ -646,11 +654,19 @@ class Runtime{
 
         var idx_for_check = -1;
 
+        var open_for_loop = 0;
         var doloop = true;
         for( var inx = instance.program_counter; doloop && inx > 0; inx-- ){
             if( instance.op_codes[inx].CODE == 'FOR-START' ){
-                idx_for_check = inx;
-                doloop = false;
+                if( open_for_loop == 1 ){
+                    idx_for_check = inx;
+                    doloop = false;
+                } else {
+                    open_for_loop--;
+                }
+
+            } else if ( instance.op_codes[inx].CODE == 'FOR-NEXT' ){
+                open_for_loop++;
             }
         }
 

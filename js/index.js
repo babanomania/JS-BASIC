@@ -46,15 +46,6 @@ run_btn.addEventListener( 'click', function(event){
             runtime.upload_opcodes( op_codes );
             runtime.execute();
 
-            /*
-            terminal.print( 'HELLO WORLD' );
-            terminal.print( 'WHAT IS YOUR NAME ? SHOUVIK' );
-            terminal.print( 'HELLO SHOUVIK' );
-            terminal.input( 'what is your name', 'name$', 10, this, ( name, value, line_num, instance ) => {
-                console.log( 'input received for var ', name, ' and value ', value );
-            });
-            */
-
         } catch(err){
             console.error( err );
             var error = document.querySelector('#error');
