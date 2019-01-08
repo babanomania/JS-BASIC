@@ -19,6 +19,8 @@ class Lexer {
             'WEND': this.parse_wend,
             'DO': this.parse_do,
             'LOOP': this.parse_loop,
+            'REPEAT': this.parse_repeat,
+            'UNTILL': this.parse_untill,
             'GOTO': this.parse_goto,
             'GOSUB': this.parse_gosub,
             'RETURN': this.parse_return,
@@ -321,10 +323,24 @@ class Lexer {
             expr.push( line_tokens[token_count] );
         }
 
-        // var loop_expr = [];
-        // for( var index = 0; index < expr.length; index ++ ){
-        //     loop_expr.push( expr[index] );
-        // }
+        return {
+            CMD: 'LOOP',
+            EXPR: expr_lexer.parse(expr),
+        }
+    }
+
+    parse_repeat( line_tokens ){
+        return {
+            CMD: 'DO',
+        };
+    }
+
+    parse_untill( line_tokens ){
+
+        var expr = [];
+        for( var token_count = 2; token_count < line_tokens.length; token_count++ ){
+            expr.push( line_tokens[token_count] );
+        }
 
         return {
             CMD: 'LOOP',

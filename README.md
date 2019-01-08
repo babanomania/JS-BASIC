@@ -42,7 +42,7 @@ The runtime should be able to handle the below basic commands
   - [ ] `REPEAT ... UNTIL`—repeat a section of code
     while the specified condition is true. The condition may be
     evaluated after each iteration of the loop.
-  - [ ] `DO ... LOOP {WHILE}` or {`UNTIL`}—repeat a section of code Forever
+  - [x] `DO ... LOOP {WHILE}` or {`UNTIL`}—repeat a section of code Forever
     or While/Until the specified condition is true. The condition may be
     evaluated before each iteration of the loop, or after.
   - [x] [`GOTO`](GOTO "wikilink")—jumps to a numbered or labelled line in
